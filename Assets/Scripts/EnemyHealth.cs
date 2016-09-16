@@ -40,24 +40,20 @@ public class EnemyHealth : MonoBehaviour
     }
 
 
-    public void TakeDamage(int amount, Vector3 hitPoint)
+    public void TakeDamage(int amount)
     {
         // If the enemy is dead...
         if (isDead)
             // ... no need to take damage so exit the function.
             return;
 
+        anim.SetTrigger("Hit");
+
         // Play the hurt sound effect.
         enemyAudio.Play();
 
         // Reduce the current health by the amount of damage sustained.
         currentHealth -= amount;
-
-        // Set the position of the particle system to where the hit was sustained.
-        hitParticles.transform.position = hitPoint;
-
-        // And play the particles.
-        hitParticles.Play();
 
         // If the current health is less than or equal to zero...
         if (currentHealth <= 0)
@@ -73,11 +69,8 @@ public class EnemyHealth : MonoBehaviour
         // The enemy is dead.
         isDead = true;
 
-        // Turn the collider into a trigger so shots can pass through it.
-        capsuleCollider.isTrigger = true;
-
         // Tell the animator that the enemy is dead.
-        anim.SetTrigger("Dead");
+        anim.SetBool("Dead", true);
 
         // Change the audio clip of the audio source to the death clip and play it (this will stop the hurt clip playing).
         enemyAudio.clip = deathClip;

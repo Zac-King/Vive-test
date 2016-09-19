@@ -18,7 +18,9 @@ public class PlayerHealth : MonoBehaviour
     bool isDead;                                                // Whether the player is dead.
     bool damaged;                                               // True when the player gets damaged.
 
+    [SerializeField] Text gameOver;
 
+    public int kills = 0;
     void Awake()
     {
         // Setting up the references.
@@ -75,11 +77,10 @@ public class PlayerHealth : MonoBehaviour
         // Set the death flag so this function won't be called again.
         isDead = true;
 
-        // Tell the animator that the player is dead.
-        anim.SetTrigger("Die");
-
         // Set the audiosource to play the death clip and play it (this will stop the hurt sound from playing).
         playerAudio.clip = deathClip;
         playerAudio.Play();
+
+        gameOver.text = "Game Over\nTotal Kill: " + kills;
     }
 }

@@ -36,7 +36,7 @@ public class EnemyMovement : MonoBehaviour
                 nav.SetDestination(transform.position);
                 anim.SetBool("Walk", false);
             }
-            else if(dist <= 1.9f)
+            else if(dist <= 2.5f)
             {
                 anim.SetBool("Walk", false);
                 Attack();
@@ -44,13 +44,15 @@ public class EnemyMovement : MonoBehaviour
 
             else
             {
-                nav.SetDestination(player.position);
                 anim.SetBool("Walk", true);
             }
+
+            nav.SetDestination(player.position);
         }
         // Otherwise...
         else
         {
+            anim.SetBool("Walk", false);
             // ... disable the nav mesh agent.
             nav.enabled = false;
         }

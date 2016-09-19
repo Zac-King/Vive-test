@@ -135,14 +135,14 @@ ModelImporter:
       curves: []
       events:
       - time: 0.315625
-        functionName: ToogleAttack
+        functionName: WeaponActive
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.6380235
-        functionName: ToogleAttack
+        functionName: WeaponDeactive
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

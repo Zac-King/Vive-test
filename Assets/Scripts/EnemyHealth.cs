@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class EnemyHealth : MonoBehaviour
     bool isDead;                                // Whether the enemy is dead.
     bool isSinking;                             // Whether the enemy has started sinking through the floor.
 
+    bool canBeHit = true;
+    public float damageDelay = .5f;
+    public bool canAttack = false;
 
     void Awake()
     {
@@ -39,13 +43,14 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-
     public void TakeDamage(int amount)
     {
         // If the enemy is dead...
-        if (isDead)
+        if (isDead || !canBeHit)
             // ... no need to take damage so exit the function.
             return;
+
+        StartCoroutine(HitSpacer());
 
         anim.SetTrigger("Hit");
 
@@ -63,7 +68,6 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-
     void Death()
     {
         // The enemy is dead.
@@ -72,20 +76,19 @@ public class EnemyHealth : MonoBehaviour
         // Tell the animator that the enemy is dead.
         anim.SetBool("Dead", true);
 
+        // Find and disable the Nav Mesh Agent.
+        GetComponent<NavMeshAgent>().enabled = false;
+
+        // Find the rigidbody component and make it kinematic (since we use Translate to sink the enemy).
+        //GetComponent<Rigidbody>().isKinematic = true;
+
         // Change the audio clip of the audio source to the death clip and play it (this will stop the hurt clip playing).
         enemyAudio.clip = deathClip;
         enemyAudio.Play();
     }
 
-
     public void StartSinking()
     {
-        // Find and disable the Nav Mesh Agent.
-        GetComponent<NavMeshAgent>().enabled = false;
-
-        // Find the rigidbody component and make it kinematic (since we use Translate to sink the enemy).
-        GetComponent<Rigidbody>().isKinematic = true;
-
         // The enemy should no sink.
         isSinking = true;
 
@@ -95,4 +98,17 @@ public class EnemyHealth : MonoBehaviour
         // After 2 seconds destory the enemy.
         Destroy(gameObject, 2f);
     }
+
+    IEnumerator HitSpacer()
+    {
+        canBeHit = false;
+        float timer = 0;
+        while (timer <= damageDelay)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        canBeHit = true;
+    }
+
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class EnemyHealthHitBox : MonoBehaviour
 {
@@ -11,7 +10,6 @@ public class EnemyHealthHitBox : MonoBehaviour
         if(c.GetComponent<WeaponHitBox>())
         {
             enemyHealth.TakeDamage(c.GetComponent<WeaponHitBox>().weaponDamage * multiplier);
-            
         }
     }
 }

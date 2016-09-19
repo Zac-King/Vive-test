@@ -8,7 +8,8 @@ public class EnemyMovement : MonoBehaviour
     EnemyHealth enemyHealth;        // Reference to this enemy's health.
     NavMeshAgent nav;               // Reference to the nav mesh agent.
     Animator anim;
-    bool canAttack = false;
+    bool canAttack = true;
+    [SerializeField] float attackDelay = 1f;
     [SerializeField] Collider weaponCollider;
     void Awake()
     {
@@ -18,8 +19,9 @@ public class EnemyMovement : MonoBehaviour
         enemyHealth = GetComponent<EnemyHealth>();
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-    }
 
+        nav.stoppingDistance = 1.5f;
+    }
 
     void Update()
     {
@@ -27,7 +29,24 @@ public class EnemyMovement : MonoBehaviour
         if (enemyHealth.currentHealth > 0 && playerHealth.currentHealth > 0)
         {
             // ... set the destination of the nav mesh agent to the player.
-            nav.SetDestination(player.position);
+            float dist = Vector3.Distance(transform.position, player.position);
+
+            if (dist > 7)
+            {
+                nav.SetDestination(transform.position);
+                anim.SetBool("Walk", false);
+            }
+            else if(dist <= 1.9f)
+            {
+                anim.SetBool("Walk", false);
+                Attack();
+            }
+
+            else
+            {
+                nav.SetDestination(player.position);
+                anim.SetBool("Walk", true);
+            }
         }
         // Otherwise...
         else
@@ -37,28 +56,54 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    void ToogleAttack()
+    void Attack()
     {
-        canAttack = !canAttack;
-        weaponCollider.enabled = canAttack;
+        if (!canAttack)
+            return;
+
+        canAttack = false;
+        anim.SetTrigger("Attack");
+        StartCoroutine(AttackDelay());
+
     }
 
-    void OnTriggerEnter(Collider c)
+    IEnumerator AttackDelay()
     {
-        if(c.gameObject.tag == "Player")
+        float timer = 0;
+        while(timer < attackDelay)
         {
-            anim.SetBool("Walk", false);
-            nav.enabled = false;
-            anim.SetTrigger("Attack");
+            timer += Time.deltaTime;
+            yield return null;
         }
+        canAttack = true;
     }
 
-    void OnTriggerExit(Collider c)
+    public void WeaponActive()
     {
-        if (c.gameObject.tag == "Player")
-        {
-            anim.SetBool("Walk", true);
-            nav.enabled = true;
-        }
+        weaponCollider.enabled = true;
     }
+
+    public void WeaponDeactive()
+    {
+        weaponCollider.enabled = false;
+    }
+
+    //void OnTriggerEnter(Collider c)
+    //{
+    //    if(c.gameObject.tag == "Player")
+    //    {
+    //        nav.SetDestination(transform.position);
+    //        //anim.SetTrigger("Attack");
+    //        anim.SetBool("Walk", false);
+    //    }
+    //}
+
+    //void OnTriggerExit(Collider c)
+    //{
+    //    if (c.gameObject.tag == "Player")
+    //    {
+    //        nav.SetDestination(player.position);
+    //        anim.SetBool("Walk", true);
+    //    }
+    //}
 }
